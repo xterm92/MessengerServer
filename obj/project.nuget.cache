@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "1Xs2BTu6F9o=",
+  "dgSpecHash": "9X/uKzab1AU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\MessengerServer\\MessengerServer.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\NMM\\NMM.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\B210145_BK\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.36\\microsoft.netcore.app.ref.6.0.36.nupkg.sha512",
+    "C:\\Users\\B210145_BK\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.36\\microsoft.windowsdesktop.app.ref.6.0.36.nupkg.sha512",
+    "C:\\Users\\B210145_BK\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.36\\microsoft.aspnetcore.app.ref.6.0.36.nupkg.sha512",
+    "C:\\Users\\B210145_BK\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.36\\microsoft.netcore.app.host.win-x64.6.0.36.nupkg.sha512"
+  ],
   "logs": []
 }

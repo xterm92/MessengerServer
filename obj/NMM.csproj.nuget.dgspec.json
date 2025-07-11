@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\MessengerServer\\MessengerServer.csproj": {}
+    "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\NMM\\NMM.csproj": {}
   },
   "projects": {
-    "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\MessengerServer\\MessengerServer.csproj": {
+    "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\NMM\\NMM.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\MessengerServer\\MessengerServer.csproj",
-        "projectName": "MessengerServer",
-        "projectPath": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\MessengerServer\\MessengerServer.csproj",
+        "projectUniqueName": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\NMM\\NMM.csproj",
+        "projectName": "NMM",
+        "projectPath": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\NMM\\NMM.csproj",
         "packagesPath": "C:\\Users\\B210145_BK\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\MessengerServer\\obj\\",
+        "outputPath": "C:\\Users\\B210145_BK\\Downloads\\RestFulApplication\\NMM\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -22,7 +22,7 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net8.0-windows"
+          "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -30,8 +30,8 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0-windows7.0": {
-            "targetAlias": "net8.0-windows",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {}
           }
         },
@@ -47,8 +47,8 @@
         }
       },
       "frameworks": {
-        "net8.0-windows7.0": {
-          "targetAlias": "net8.0-windows",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "imports": [
             "net461",
             "net462",
@@ -60,15 +60,30 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
-            },
-            "Microsoft.WindowsDesktop.App.WindowsForms": {
-              "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }

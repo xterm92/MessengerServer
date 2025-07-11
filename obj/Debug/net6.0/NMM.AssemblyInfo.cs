@@ -10,15 +10,13 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("MessengerServer")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("NMM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("MessengerServer")]
-[assembly: System.Reflection.AssemblyTitleAttribute("MessengerServer")]
+[assembly: System.Reflection.AssemblyProductAttribute("NMM")]
+[assembly: System.Reflection.AssemblyTitleAttribute("NMM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
-[assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 
 // MSBuild WriteCodeFragment 클래스에서 생성되었습니다.
 
