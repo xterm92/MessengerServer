@@ -1,133 +1,88 @@
-ï»¿using System;
-using System.Collections.Generic;
+// Program.cs  (TargetFramework: net6.0 ÀÌ»ó)
 using System.Net;
-using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace MessengerServer
+var builder = WebApplication.CreateBuilder(args);
+
+// WebSocket ¿É¼Ç?ÇÊ¿ä¿¡ µû¶ó Á¶Á¤
+builder.Services.AddLogging(c => c.AddConsole());
+builder.Services.AddWebSockets(options =>
 {
-    class Program
+    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+});
+
+var app = builder.Build();
+app.UseWebSockets();
+
+var logger = app.Logger;
+var clients = new List<WebSocket>();
+
+// ===== WebSocket ¿£µåÆ÷ÀÎÆ® =====
+app.Map("/ws", async context =>
+{
+    if (!context.WebSockets.IsWebSocketRequest)
     {
-        private static TcpListener listener;
-        private static List<TcpClient> clients = new List<TcpClient>();
-        private static bool isRunning = false;
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return;
+    }
 
-        static async Task Main(string[] args)
+    using var socket = await context.WebSockets.AcceptWebSocketAsync();
+    lock (clients) clients.Add(socket);
+    logger.LogInformation("Å¬¶óÀÌ¾ğÆ® ¿¬°áµÊ: {Endpoint}", context.Connection.RemoteIpAddress);
+
+    var buffer = new byte[1024 * 4];
+    try
+    {
+        while (socket.State == WebSocketState.Open)
         {
-            Console.Title = "Message Receive Server";
+            var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+            if (result.MessageType == WebSocketMessageType.Close)
+                break;
 
-            StartServer();
+            var msg = Encoding.UTF8.GetString(buffer.AsSpan(0, result.Count));
+            logger.LogInformation("[{Endpoint}] {Message}", context.Connection.RemoteIpAddress, msg);
 
-            Console.WriteLine("ì„œë²„ê°€ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤. í´ë¼ì´ì–¸íŠ¸ ì—°ê²°ì„ ê¸°ë‹¤ë¦¬ëŠ” ì¤‘...");
-            Console.WriteLine("ì¢…ë£Œí•˜ë ¤ë©´ Ctrl+Cë¥¼ ëˆ„ë¥´ì„¸ìš”.");
-
-            // Ctrl+C ëˆ„ë¥´ë©´ ì¢…ë£Œ ì´ë²¤íŠ¸ ì²˜ë¦¬
-            Console.CancelKeyPress += (sender, e) =>
-            {
-                Console.WriteLine("ì„œë²„ ì¢…ë£Œ ì¤‘...");
-                isRunning = false;
-                listener.Stop();
-                lock (clients)
-                {
-                    foreach (var client in clients)
-                    {
-                        client.Close();
-                    }
-                }
-                Environment.Exit(0);
-            };
-
-            // ì„œë²„ê°€ ê³„ì† ì‹¤í–‰ë˜ë„ë¡ Task ëŒ€ê¸°
-            while (isRunning)
-            {
-                await Task.Delay(1000);
-            }
-        }
-
-        private static void StartServer()
-        {
-            try
-            {
-                listener = new TcpListener(IPAddress.Any, 9000);
-                listener.Start();
-                isRunning = true;
-
-                Task.Run(async () =>
-                {
-                    while (isRunning)
-                    {
-                        TcpClient client = await listener.AcceptTcpClientAsync();
-                        lock (clients)
-                        {
-                            clients.Add(client);
-                        }
-                        Console.WriteLine($"í´ë¼ì´ì–¸íŠ¸ ì—°ê²°ë¨: {client.Client.RemoteEndPoint}");
-
-                        _ = Task.Run(() => HandleClient(client));
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ì„œë²„ ì˜¤ë¥˜: " + ex.Message);
-            }
-        }
-
-        private static void HandleClient(TcpClient client)
-        {
-            NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
-
-            try
-            {
-                while (isRunning)
-                {
-                    int byteCount = stream.Read(buffer, 0, buffer.Length);
-                    if (byteCount == 0)
-                        break;
-
-                    string message = Encoding.UTF8.GetString(buffer, 0, byteCount);
-                    Console.WriteLine($"[{client.Client.RemoteEndPoint}] {message}");
-
-                    BroadcastMessage(client, message);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"í´ë¼ì´ì–¸íŠ¸ ì˜¤ë¥˜: {ex.Message}");
-            }
-            finally
-            {
-                Console.WriteLine($"í´ë¼ì´ì–¸íŠ¸ ì¢…ë£Œ: {client.Client.RemoteEndPoint}");
-                lock (clients)
-                {
-                    clients.Remove(client);
-                }
-                client.Close();
-            }
-        }
-
-        private static void BroadcastMessage(TcpClient sender, string message)
-        {
-            byte[] data = Encoding.UTF8.GetBytes(message);
+            // ¸ğµç Å¬¶óÀÌ¾ğÆ®¿¡°Ô ºê·ÎµåÄ³½ºÆ®
+            var data = Encoding.UTF8.GetBytes(msg);
+            List<WebSocket> toRemove = new();
             lock (clients)
             {
-                foreach (var client in clients)
+                foreach (var ws in clients)
                 {
-                    if (client != sender && client.Connected)
+                    if (ws.State != WebSocketState.Open || ws == socket) continue;
+                    try
                     {
-                        try
-                        {
-                            client.GetStream().Write(data, 0, data.Length);
-                        }
-                        catch
-                        {
-                            // ì˜ˆì™¸ ë¬´ì‹œ
-                        }
+                        ws.SendAsync(data, WebSocketMessageType.Text, true, CancellationToken.None).Wait();
+                    }
+                    catch
+                    {
+                        toRemove.Add(ws);
                     }
                 }
+                // ²÷±ä ¼ÒÄÏ Á¤¸®
+                foreach (var dead in toRemove) clients.Remove(dead);
             }
         }
     }
-}
+    finally
+    {
+        lock (clients) clients.Remove(socket);
+        await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+        logger.LogInformation("Å¬¶óÀÌ¾ğÆ® Á¾·á: {Endpoint}", context.Connection.RemoteIpAddress);
+    }
+});
+
+// ·çÆ®¿¡¼­ °£´ÜÇÑ »óÅÂ È®ÀÎ¿ë HTTP ÀÀ´ä
+app.MapGet("/", () => "MessengerServer WebSocket is running.");
+
+// ---------- Æ÷Æ® ¼³Á¤ ----------
+var portStr = Environment.GetEnvironmentVariable("PORT");
+var port    = !string.IsNullOrEmpty(portStr) && int.TryParse(portStr, out var p) ? p : 8080;
+app.Urls.Add($"http://0.0.0.0:{port}");
+
+logger.LogInformation("À¥¼ÒÄÏ ¼­¹ö ½ÃÀÛ - Æ÷Æ® {Port}", port);
+await app.RunAsync();
